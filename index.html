@@ -50,6 +50,9 @@
             <div id = "upgrades_button" class = "menu_button" onclick="swapWindow(1)"> 
                 <span> Upgrades </span>
             </div>
+            <div id = "prestige_button" class = "menu_button"> 
+                <span> ??? </span>
+            </div>
             <div id = "stats_button" class = "menu_button" onclick="swapWindow(2)"> 
                 <span> Stats </span>
             </div>
@@ -88,11 +91,11 @@
                     Save Game
                 </div>
 
-                <div class = "save_button" onclick="loadSave()">
-                    Load Game
+                <div class = "save_button" onclick="showImportExportWindow()">
+                    Import/Export Save
                 </div>
 
-                <div style="position:absolute; top: 3.6vw; left: 10.5vw;">
+                <div style="position:absolute; top: 3.6vw; left: 10.5vw;font-size: 0.8vw;">
                     <i>(The game autosaves every 60 seconds.)</i>
                 </div>
 
@@ -101,10 +104,28 @@
                 </div>
             </div>
 
+            <div id = "prestige">
+                prestige time buckaroos
+            </div>
+
         </div>
 
         
 
+    </div>
+
+    <div id = "import_export_window" hidden = true>
+        Save Data        
+        <textarea name="save" id="import_export_text" cols="30" rows="10">
+        </textarea>
+
+        <div class = "import_export_button" onclick="closeImportExportWindow()" style = "right:20px">
+            Close
+        </div>
+
+        <div class = "import_export_button" onclick="importSave()" style = "left:20px">
+            Import Save
+        </div>
     </div>
     
 

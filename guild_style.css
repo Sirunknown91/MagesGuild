@@ -286,6 +286,27 @@ body {
 
 }
 
+.locked_menu_button {
+    position: absolute;
+    box-sizing: border-box;
+    padding: 5px;
+
+    height: 100%;
+
+    text-align: center;
+    color:whitesmoke;
+
+    cursor: default;
+
+    font-size: 2.1vw;
+
+    line-height: 6vh;
+
+    
+    border: solid 3px rgb(36, 36, 36);
+    background-color: rgb(65, 65, 65);
+}
+
 #members_button{
     left:0px;
     width: 0%
@@ -615,3 +636,71 @@ body {
     background-color: rgb(75, 72, 43);
 
 }
+
+#prestige{
+    color:whitesmoke;
+    background-color: rgb(17, 0, 20);
+
+    width:100%;
+    height:100%;
+
+    overflow-y: scroll;
+}
+
+#import_export_window{
+    position: absolute;
+
+    color:whitesmoke;
+    font-size: 25px;
+
+    padding: 10px;
+    text-align: center;
+
+    left:40vw;
+    top:20vh;
+
+    width:350px;
+    height:350px;
+
+    z-index: 2;
+
+    border: solid 3px rgb(29, 27, 14);
+    background-color: rgb(99, 95, 57);
+
+}   
+
+#import_export_text{
+    position:absolute;
+
+    left: 25px;
+    top: 50px;
+
+    font-size: 16px;
+}
+
+.import_export_button{
+    position: absolute;
+
+    top: 300px;
+
+    float:right;
+
+    color:whitesmoke;
+    font-size: 25px;
+
+    padding: 10px;
+    text-align: center;
+
+    border: solid 3px rgb(29, 27, 14);
+    background-color: rgb(56, 54, 31);
+}
+
+.import_export_button:hover{
+    background-color: rgb(75, 72, 43);
+
+}
+
+textarea {
+    resize: none;
+}
+

@@ -1,16 +1,15 @@
 /*
- * Mage's Guild (v1.0) by Sirunknown (/u/sirunknown91 on Reddit)
+ * Mage's Guild (v0.9) by Sirunknown (/u/sirunknown91 on Reddit)
  * Thanks for looking at my code! Please keep in mind that I only took like, a single "Web and internet programming" course that mostly focus on html, css, and PHP and stuff so 
  * javscript is not exactly my strongest language.
  *
 */
-
 //Frames per second
 var FPS = 60;
 //Ticks per second
 var TICKS_PER = 10;
 
-var version = 0.5
+var version = 0.9;
 
 //Mana per second
 var mana_per = 0.0;
@@ -56,7 +55,7 @@ var manifest_gold_limit = 10;
 var study_world_spell;
 
 var reanimate_worker_spell
-var reanimate_worker_cost_mult = 1.2;
+var reanimate_worker_cost_mult = 1.1;
 
 //store members
 var members = [];
@@ -80,6 +79,9 @@ var upgrades = [];
 var avail_upgrades = [];
 var purchased_upgrades = [];
 
+//prestige variables
+var prestige_unlocked = false;
+
 //input flags
 var ctrlDown = false;
 
@@ -90,7 +92,7 @@ var num_mode = 0; //0 is words/engineering, 1 is engineering, 2 is scientific
 var new_upgrade = false;
 
 //Save file
-var true_save_data
+var encoded_save_data
 
 //HTML stuff
 
@@ -112,6 +114,13 @@ var purchased_upgrades_elem;
 //upgrade button
 var upgrades_menu_button;
 
+//prestige button
+var prestige_menu_button;
+
+//import/export window stuff
+var import_export_window;
+var import_export_text;
+
 //num mode setting
 var num_mode_button;
 
@@ -121,6 +130,7 @@ var update_interval;
 var check_interval;
 
 var save_interval;
+
 
 class Spell{
     constructor(name = "nothing",   description = "no desc",
@@ -202,6 +212,9 @@ class Member{
         //production multiplicative bonus
         this.prod_mult_bonus = 1.0;
 
+        //cost multiplication factor(for reducing cost)
+        this.cost_factor = 1.0;
+
         //unlocked flag
         this.unlocked = false;
     }
@@ -253,7 +266,7 @@ class Member{
     }
 
     updateCost(){
-        this.cost = this.base_cost * Math.pow(this.cost_scale, this.count);
+        this.cost = this.base_cost * Math.pow(this.cost_scale, this.count) *this.cost_factor;
     }
 
     updateProd(){
@@ -372,11 +385,16 @@ function Start(){
 
     menu_window = document.getElementById("menu_window");
     upgrades_menu_button = document.getElementById("upgrades_button");
+    prestige_menu_button = document.getElementById("prestige_button");
 
     stats_area = document.getElementById("stats_area");
 
     avail_upgrades_elem = document.getElementById("avail_upgrades");
     purchased_upgrades_elem = document.getElementById("purchased_upgrades");
+
+    import_export_window = document.getElementById("import_export_window");
+    import_export_text = document.getElementById("import_export_text");
+
 
     num_mode_button = document.getElementById("num_mode_button");
 
@@ -511,9 +529,9 @@ function Start(){
 
     //Study world Upgrades
     addStudyWorldUpgrade("Leyline mapping", "Multiplies all mana production by 1.1", 1);
-    addStudyWorldUpgrade("New Memberships", "Multiplies production of Apprentices and Recruiters by 1.5", 2, function(){apprentice_member.prod_mult_bonus *= 1.5; recruiter_member.prod_mult_bonus *= 1.5});
+    addStudyWorldUpgrade("Trade route mapping", "Multiplies all gold production by 1.1", 2, function(){increaseGoldMultBonus(1.1)});
     addStudyWorldUpgrade("Leyline mapping 2", "Multiplies all mana production by 1.1", 3);
-    addStudyWorldUpgrade("Trade route mapping", "Multiplies all gold production by 1.1", 4, function(){increaseGoldMultBonus(1.1)});
+    addStudyWorldUpgrade("Guild Highway", "Reduces cost of purchasing new members by 5%", 4, onPurchaseGuildHighway);
     addStudyWorldUpgrade("Leyline mapping 3", "Multiplies all mana production by 1.1", 5);
 
     addStudyWorldUpgrade("Grand Library", "Multiplies Scholar production by 5", 6, function(){scholar_member.prod_mult_bonus *= 5});
@@ -528,11 +546,11 @@ function Start(){
     addStudyWorldUpgrade("Hills of gold", "Multiplies all gold production by 4", 14, function(){increaseGoldMultBonus(4)});
     addStudyWorldUpgrade("Rip in time", "Multiplies all production by 3 <br><q><i>Time flows differently here. Would make a neat tourist destination</i></q>", 15, function(){increaseBothMultBonus(3)});
 
-    addStudyWorldUpgrade("Leyline mapping 8", "Multiplies all mana production by 1.1", 16);
-    addStudyWorldUpgrade("Trade route mapping 3", "Multiplies all gold production by 1.1", 17, function(){increaseGoldMultBonus(1.1)});
-    addStudyWorldUpgrade("Leyline mapping 9", "Multiplies all mana production by 1.1", 18);
-    addStudyWorldUpgrade("Trade route mapping 4", "Multiplies all gold production by 1.1", 19, function(){increaseGoldMultBonus(1.1)});
-    addStudyWorldUpgrade("Rip in time 2", "Multiplies all production by 5 <br><q><i>Your scholars tell you this is actually the same rip in time as the last one, merely existing in the same time, but different place. Neat.</i></q>", 20, function(){increaseBothMultBonus(5)});
+    // addStudyWorldUpgrade("Leyline mapping 8", "Multiplies all mana production by 1.1", 16);
+    // addStudyWorldUpgrade("Trade route mapping 3", "Multiplies all gold production by 1.1", 17, function(){increaseGoldMultBonus(1.1)});
+    // addStudyWorldUpgrade("Leyline mapping 9", "Multiplies all mana production by 1.1", 18);
+    // addStudyWorldUpgrade("Trade route mapping 4", "Multiplies all gold production by 1.1", 19, function(){increaseGoldMultBonus(1.1)});
+    // addStudyWorldUpgrade("Rip in time 2", "Multiplies all production by 5 <br><q><i>Your scholars tell you this is actually the same rip in time as the last one, merely existing in the same time, but different place. Neat.</i></q>", 20, function(){increaseBothMultBonus(5)});
 
 
     //fixing width of right menu buttons
@@ -543,6 +561,9 @@ function Start(){
         menu_buttons[i].style.width = mb_width.toString() + "%";
         menu_buttons[i].style.left = (mb_width * i).toString() + "%";
     }
+
+    //prestige button styling
+    prestige_menu_button.className = "locked_menu_button";
 
     //event listeners
     document.addEventListener('keydown', checkCtrl);
@@ -588,6 +609,7 @@ function Reset(){
         members[i].cost_scale = 1.1;
         members[i].prod_add_bonus = 1.0;
         members[i].prod_mult_bonus = 1.0;
+        members[i].cost_factor = 1.0;
         members[i].unlocked = false;
         members[i].updates();
     }
@@ -634,6 +656,15 @@ function trueReset(){
 
     total_mana_count = 0;
     total_gold_count = 0;
+
+    //reseting prestige button
+    prestige_unlocked = false;
+    prestige_menu_button.className = "locked_menu_button"
+    prestige_menu_button.setAttribute('onclick', '');
+
+    prestige_menu_button.style.color = "WhiteSmoke";
+    prestige_menu_button.innerHTML = "???";
+
     Reset();
 }
 
@@ -712,6 +743,11 @@ function checkUnlocks(){
         upgrades_menu_button.style.color = "khaki";
     }else{
         upgrades_menu_button.style.color = "whitesmoke";
+    }
+
+    //TODO: update to real condition
+    if(!prestige_unlocked && total_mana_count > 1000000000000){
+        unlockPrestigeButton();
     }
 
     updateStats();
@@ -940,6 +976,16 @@ function findUpgradeById(id){
     return null;
 }
 
+function unlockPrestigeButton(){
+    prestige_menu_button.className = "menu_button";
+    prestige_menu_button.setAttribute('onclick', 'swapWindow(4)');
+
+    prestige_menu_button.style.color = "MediumPurple";
+    prestige_menu_button.innerHTML = "Prestige";
+
+    prestige_unlocked = true;
+}
+
 //Debug Cheats
 function unlockAllUpgrades(){
     console.log("Cheater!");
@@ -1041,6 +1087,33 @@ function changeNumDisplay(mode = -1){
         num_mode_button.innerHTML = "Number display mode: Scientific";
     }
 }
+
+function showImportExportWindow(){
+    import_export_window.hidden = false;
+    
+    writeSave();
+
+    import_export_text.value = encoded_save_data;
+
+    import_export_text.focus();
+    import_export_text.select();
+
+
+}
+
+function closeImportExportWindow(){
+    import_export_window.hidden = true;
+
+    import_export_text.blur();
+}
+
+function importSave(){
+    loadSave(import_export_text.value);
+
+    closeImportExportWindow();
+}
+
+
 //Creating HTML elements
 function createSpellElement(i, spell = spells[i]){
     const createSpell = document.createElement("div");
@@ -1315,14 +1388,17 @@ function writeSave(){
 
     //Saving upgrades
     for(let i = 0; i < upgrades.length;i++){
-        save_data += "~";
-        save_data += "U";
-        save_data += "|";
-        save_data += upgrades[i].id;
-        save_data += "|";
-        save_data += upgrades[i].unlocked;
-        save_data += "|";
-        save_data += upgrades[i].purchased;
+        if(upgrades[i].unlocked){
+            save_data += "~";
+            save_data += "U";
+            save_data += "|";
+            save_data += upgrades[i].id;
+            save_data += "|";
+            save_data += upgrades[i].unlocked;
+            save_data += "|";
+            save_data += upgrades[i].purchased;
+        }
+        
     }
 
     //Saving one-off things
@@ -1336,12 +1412,16 @@ function writeSave(){
     save_data += "|";
     save_data += num_mode;
 
-    console.log("Saved game");
+    save_data += "~";
+    save_data += "PrestButton";
+    save_data += "|";
+    save_data += prestige_unlocked;
 
-    true_save_data = save_data;
+    encoded_save_data = utf8_to_b64(save_data);
 
     try{
-        localStorage.setItem('guild_save', save_data);
+        localStorage.setItem('guild_save', encoded_save_data);
+        console.log("Saved game");
 
     }catch(error){
         console.error("could not save to local storage: " + error);
@@ -1350,10 +1430,23 @@ function writeSave(){
 
 }
 
-function loadSave(){
+function loadSave(str = ""){
     trueReset();
 
-    let save_data = localStorage.getItem('guild_save');
+    let save_data = "";
+
+    if(str == ""){
+        try{
+            save_data = b64_to_utf8(localStorage.getItem('guild_save'));
+
+        }catch(error){
+            console.error("could not load from local storage: " + error);
+            
+        }
+        
+    }else{
+        save_data = b64_to_utf8(str);
+    }
 
     if(save_data){
         //Splits into major sections by ~
@@ -1410,6 +1503,10 @@ function loadSave(){
                     changeSpell(parseInt(sub_bits[1]))
                 }else if (prime_sub_bit == "Num Mode"){
                     changeNumDisplay(parseInt(sub_bits[1]))
+                }else if(prime_sub_bit == "PrestButton"){
+                    if(sub_bits[1] === "true"){
+                        unlockPrestigeButton();
+                    }
                 }
 
             }
@@ -1420,6 +1517,15 @@ function loadSave(){
     updateUpgradesShop();
     
 }
+
+function utf8_to_b64( str ) {
+    return window.btoa(unescape(encodeURIComponent( str )));
+  }
+  
+function b64_to_utf8( str ) {
+    return decodeURIComponent(escape(window.atob( str )));
+}
+
 
 
 ////////////
@@ -1530,3 +1636,10 @@ function findReanimateTarget(){
 }
 
 //Functions for upgrades
+
+function onPurchaseGuildHighway(){
+    for(let i = 0; i < members.length; i++){
+        members[i].cost_factor *= .95;
+        members[i].updates();
+    }
+}
