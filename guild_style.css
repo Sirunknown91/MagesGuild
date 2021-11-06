@@ -1,0 +1,617 @@
+body {
+    background-color: rgb(253, 251, 228);
+
+    -webkit-user-select: none;
+
+    -moz-user-select: -moz-none;
+
+    -ms-user-select: none;
+
+    user-select: none;
+}
+
+
+#left_menu{
+    position: absolute;
+    width: 50%;
+    left:0px;
+    height:99%;
+
+    box-sizing: border-box;
+    padding: 5px;
+    
+}
+
+#counters{
+    position: absolute;
+    text-align: center;
+    color:whitesmoke;
+
+    
+    right:5px;
+    left:5px;
+    top:5px;
+    height: 30%;
+}
+
+
+
+#mana_counter_title {
+    position: absolute;
+
+    box-sizing: border-box;
+    padding: 5px;
+
+    width: 50%;
+    height:25%;
+
+
+    font-size: 2.5vw;
+
+}
+
+#mana_counter_spell {
+    position: absolute;
+
+    box-sizing: border-box;
+    padding: 5px;
+
+    top:25%;
+    width: 50%;
+    height:25%;
+
+
+    font-size: 1.5vw;
+}
+
+#gold_counter_title {
+    position: absolute;
+
+    left: 50%;
+    box-sizing: border-box;
+    padding: 5px;
+
+    width: 50%;
+    height:50%;
+
+    font-size: 4vw;
+
+    
+
+}
+
+#mana_counter {
+    position: absolute;
+
+    box-sizing: border-box;
+    padding: 5px;
+    top: 50%;
+
+    width: 50%;
+    height:25%;
+    line-height: 3vw;
+
+    font-size: 2.3vw;
+
+    background-color: rgb(0, 0, 135);
+
+
+}
+
+#gold_counter {
+    position: absolute;
+
+    box-sizing: border-box;
+    padding: 5px;
+    left:50%;
+    top: 50%;
+
+    width: 50%;
+    height:25%;
+
+    line-height: 3vw;
+
+    font-size: 2.3vw;
+
+    background-color: rgb(229, 172, 52);
+
+}
+
+#mana_per_counter{
+    position: absolute;
+
+    box-sizing: border-box;
+    padding: 5px;
+    top: 75%;
+
+    width: 50%;
+    height:25%;
+
+    line-height: 30px;
+
+    font-size: 2vw;
+}
+
+#gold_per_counter{
+    position: absolute;
+
+    box-sizing: border-box;
+    padding: 5px;
+    left:50%;
+    top: 75%;
+
+    width: 50%;
+    height:25%;
+
+    line-height: 30px;
+
+    font-size: 2vw;
+}
+
+
+.mana_counts {
+    background-color: rgb(0, 0, 105);
+}
+
+.gold_counts {
+    background-color: rgb(199, 152, 32);
+}
+
+#spellbook {
+    position: absolute;
+
+    top: 32%;
+    bottom:3px;
+    left:5px;
+    right:5px;
+
+    overflow-y:scroll;
+
+    border: solid 3px rgb(49, 36, 9);
+    background-color: rgb(219, 215, 175);
+    
+}
+
+.spell{
+    position: relative;
+    height: 8vw;
+    margin: .2vw;
+    border: solid 3px rgb(41, 9, 49);
+    background-color: rgb(170, 166, 126);
+
+    cursor: pointer;
+}
+
+.spell_name{
+    position: absolute;
+    height: 4vw;
+    width: 16vw;
+    margin: .3vw;
+
+    line-height: 3vw;
+
+    text-align: center;
+    font-size: 2vw;
+
+    color:whitesmoke;
+    border: solid 3px rgb(29, 27, 14);
+    background-color: rgb(56, 54, 31);
+
+}
+
+.spell_info{
+    position: absolute;
+
+    height: 2.3vw;
+    width: 8vw;
+    margin: .3vw;
+
+    bottom: .1vw;
+
+    font-size: 1vw;
+    color:whitesmoke;
+    border: solid 3px rgb(29, 27, 14);
+    background-color: rgb(56, 54, 31);
+}
+
+.spell_desc{
+    position: absolute;
+
+    height: 4vw;
+    width: 28vw;
+    margin: .3vw;    
+
+    left: 17vw;
+
+    font-size: 1.2vw;
+    color:whitesmoke;
+    border: solid 3px rgb(29, 27, 14);
+    background-color: rgb(56, 54, 31);
+}
+
+#right_menu{
+    position: absolute;
+
+    left: 50%;
+    top: 5px;
+
+    width: 50%;
+    height: 99%;
+
+    box-sizing: border-box;
+    padding: 5px;
+
+    border: solid 1px rgb(70, 48, 0);
+    background-color: rgb(219, 215, 175);
+}
+
+#menu_buttons{
+    position: absolute;
+    box-sizing: border-box;
+    padding: 0px;
+
+    height: 10%;
+
+    right: 5px;
+    left:5px;
+
+    border: solid 1px rgb(70, 48, 0);
+
+}
+
+
+.menu_button {
+    position: absolute;
+    box-sizing: border-box;
+    padding: 5px;
+
+    height: 100%;
+
+    text-align: center;
+    color:whitesmoke;
+
+    cursor: pointer;
+
+    font-size: 2.1vw;
+
+    line-height: 6vh;
+
+    
+    border: solid 3px rgb(29, 27, 14);
+    background-color: rgb(56, 54, 31);
+}
+
+.menu_button:hover {
+    background-color: rgb(75, 72, 43);
+
+}
+
+#members_button{
+    left:0px;
+    width: 0%
+}
+
+#upgrades_button{
+    left:0px;
+    width: 0%
+}
+
+#menu_window {
+    position: absolute;
+    box-sizing: border-box;
+
+    top: 12%;
+    left:5px;
+    right:5px;
+
+    height: 85%;
+
+    border: solid 5px rgb(70, 48, 0);
+}
+
+
+
+#members {
+    position: absolute;
+
+    width:100%;
+    height:100%;
+
+    overflow: auto;
+}
+
+.member{
+    position: absolute;
+
+    height: 12vw;
+    width: 22.5vw;
+
+    border: solid 3px rgb(37, 23, 0);
+    background-color: rgb(167, 162, 138);
+
+}
+
+.member_name{
+    position: absolute;
+    height: 3.5vw;
+    width: 10vw;
+    margin: .3vw;
+
+    line-height: 3.5vw;
+
+    text-align: center;
+    font-size: 1.8vw;
+
+    color:rgb(237, 255, 172);
+    border: solid 3px rgb(29, 27, 14);
+    background-color: rgb(56, 54, 31);
+}
+
+.member_desc{
+    position: absolute;
+    height: 7vw;
+    width: 10.3vw;
+    margin: .3vw;
+    top: 4.1vw;
+
+    box-sizing: border-box;
+    padding: .3vw;
+    font-size: 1.1vw;
+
+    color:whitesmoke;
+    border: solid 3px rgb(29, 27, 14);
+    background-color: rgb(56, 54, 31);
+}
+
+.member_info{
+    position: absolute;
+    height: 1.9vw;
+    width: 11.2vw;
+    margin: .3vw;
+
+    left: 10.6vw;
+
+    box-sizing: border-box;
+    padding: .2vw;
+    font-size: 1vw;
+
+
+    color:rgb(29, 27, 14);
+    /*
+    border: solid 3px rgb(29, 27, 14);
+    background-color: rgb(56, 54, 31);
+    */
+}
+
+.member_buy{
+    position: absolute;
+    height: 3vw;
+    width: 11.2vw;
+    margin: .3vw;
+
+    left: 10.6vw;
+    top:8.1vw;
+
+    box-sizing: border-box;
+    padding: .2vw;
+    font-size: 1vw;
+
+    cursor: pointer;
+
+    color:whitesmoke;
+    border: solid 3px rgb(48, 41, 0);
+    background-color: rgb(112, 103, 0);
+}
+
+#upgrades {
+    position: absolute;
+
+    width: 100%;
+    height: 100%;
+
+    overflow-y: scroll;
+
+    
+}
+
+#stats {
+    color:whitesmoke;
+    background-color: rgb(99, 95, 57);
+
+    width:100%;
+    height:100%;
+
+    overflow-y: scroll;
+}
+
+#stats_header{
+    position: absolute;
+    color:whitesmoke;
+    background-color: rgb(56, 54, 31);
+    border: solid 3px rgb(48, 41, 0);
+
+    top:.2vw;
+    left:  1.5vw;
+    right: 1.5vw;
+
+    text-align: center;
+    font-size: 1.8vw;
+}
+
+#stats_area{
+    position: absolute;
+
+    color:whitesmoke;
+    top: 4vw;
+    left: 1.5vw;
+}
+
+.statistic{
+    position: relative;
+
+    font-size: 1.1vw;
+
+    padding: .2vw;
+}
+
+.upgrades_title{
+    position: relative;
+    color:whitesmoke;
+    background-color: rgb(56, 54, 31);
+    border: solid 3px rgb(48, 41, 0);
+
+    top:.2vw;
+    left:  1.7vw;
+
+    width: 45vw;
+
+
+    text-align: center;
+    font-size: 1.8vw;
+}
+
+.upgrades_window{
+    position: relative;
+    
+    top:.2vw;
+    left:  1.7vw;
+
+    width: 45vw;
+}
+
+.upgrade{
+    position: relative;
+
+    font-size: 1.1vw;
+    margin: .2vw;
+
+    left: .3vw;
+    width: 14vw;
+    height: 4.3vw;
+
+    float: left;
+
+
+    color:whitesmoke;
+    background-color: rgb(99, 95, 57);
+    border: solid 2px rgb(48, 41, 0);
+}
+
+.upgrade_info{
+
+    margin: .2vw;
+    padding: .1vw;
+
+    height: 1.3vw;
+
+
+    border: solid 3px rgb(29, 27, 14);
+    background-color: rgb(56, 54, 31);
+}
+
+.upgrade_buy{
+
+    margin: .2vw;
+    padding: .1vw;
+
+    height: 1.3vw;
+
+    cursor: pointer;
+
+    border: solid 3px rgb(48, 41, 0);
+    background-color: rgb(112, 103, 0);
+}
+
+.upgrade_desc{
+    position:absolute;
+    margin: .2vw;
+    padding: .2vw;
+
+    font-size: 1vw;
+
+    width: 10vw;
+    right: -10.7vw;
+    top: -.3vw;
+
+    z-index: 1;
+
+    border: solid 3px rgb(57, 29, 58);
+    background-color: rgb(82, 43, 83);
+}
+
+#settings {
+    color:whitesmoke;
+    background-color: rgb(99, 95, 57);
+
+    width:100%;
+    height:100%;
+
+    overflow-y: scroll;
+}
+
+#settings_header{
+    position: absolute;
+    color:whitesmoke;
+    background-color: rgb(56, 54, 31);
+    border: solid 3px rgb(48, 41, 0);
+
+    top:.2vw;
+    left:  1.5vw;
+    right: 1.5vw;
+
+    text-align: center;
+    font-size: 1.8vw;
+}
+
+.save_button{
+    position: relative;
+
+    text-align: center;
+    color:whitesmoke;
+
+    padding: .1vw;
+    margin: .3vw;
+    top: 3vw;
+    left: 1.5vw;
+
+    width: 8vw;
+
+    cursor: pointer;
+
+    font-size: 1.1vw;
+
+    
+    border: solid 3px rgb(29, 27, 14);
+    background-color: rgb(56, 54, 31);
+}
+
+.save_button:hover{
+    background-color: rgb(75, 72, 43);
+}
+
+.option_button{
+    position: relative;
+
+    text-align: left;
+    color:whitesmoke;
+
+    padding: .2vw;
+    margin: .3vw;
+    top: 9vw;
+    left: 1.5vw;
+
+    width: 16vw;
+
+    cursor: pointer;
+
+    font-size: 1.1vw;
+
+    
+    border: solid 3px rgb(29, 27, 14);
+    background-color: rgb(56, 54, 31);
+}
+
+.option_button:hover{
+    background-color: rgb(75, 72, 43);
+
+}
