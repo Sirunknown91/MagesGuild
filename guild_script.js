@@ -1,5 +1,5 @@
 /*
- * Mage's Guild (v0.9) by Sirunknown (/u/sirunknown91 on Reddit)
+ * Mage's Guild (v1) by Sirunknown (/u/sirunknown91 on Reddit)
  * Thanks for looking at my code! Please keep in mind that I only took like, a single "Web and internet programming" course that mostly focus on html, css, and PHP and stuff so 
  * javscript is not exactly my strongest language.
  *
@@ -9,7 +9,7 @@ var FPS = 60;
 //Ticks per second
 var TICKS_PER = 10;
 
-var version = 0.9;
+var version = 1;
 
 //Mana per second
 var mana_per = 0.0;
@@ -54,8 +54,11 @@ var manifest_gold_limit = 10;
 
 var study_world_spell;
 
-var reanimate_worker_spell
-var reanimate_worker_cost_mult = 1.1;
+var reanimate_worker_spell;
+var reanimate_worker_cost_mult = 1.05;
+
+var invoke_divine_spell;
+
 
 //store members
 var members = [];
@@ -81,6 +84,10 @@ var purchased_upgrades = [];
 
 //prestige variables
 var prestige_unlocked = false;
+
+var potential_prestige = 0;
+var prestige_points = 0;
+var ichor_count = 0;
 
 //input flags
 var ctrlDown = false;
@@ -120,6 +127,15 @@ var prestige_menu_button;
 //import/export window stuff
 var import_export_window;
 var import_export_text;
+
+//prestige reset button
+var prestige_reset_button;
+
+//prestige confirmation window
+var prestige_confirm_window;
+
+//prestige counter
+var prestige_counter;
 
 //num mode setting
 var num_mode_button;
@@ -270,7 +286,7 @@ class Member{
     }
 
     updateProd(){
-        this.prod_per = this.base_prod_per * this.prod_mult_bonus * this.prod_add_bonus;
+        this.prod_per = this.base_prod_per * this.prod_mult_bonus * this.prod_add_bonus * ((0.1 * prestige_points) + 1);
         if(this.isMage){
             this.prod_per *= (mana_add_bonus * mana_mult_bonus);
         }else{
@@ -395,22 +411,25 @@ function Start(){
     import_export_window = document.getElementById("import_export_window");
     import_export_text = document.getElementById("import_export_text");
 
-
     num_mode_button = document.getElementById("num_mode_button");
 
+    prestige_reset_button = document.getElementById("prestige_reset_button");
+    prestige_confirm_window = document.getElementById("prestige_confirm_window");
+    prestige_counter = document.getElementById("prestige_counter");
+
     //creating members
-    apprentice_member = new Member("Apprentice", "An inexperienced mage to learn and help.", 10, 1, true);
+    apprentice_member = new Member("Apprentice", "An inexperienced mage to learn and help.", 10, .5, true);
     recruiter_member = new Member("Recruiter", "A recruiter to draw more attention to your guild.", 50, 2, false);
-    scholar_member = new Member("Scholar", "A more experienced mage, but still interesting in learning.", 500, 7, true);
-    builder_member = new Member("Builder", "A helpful construction worker to expand your guild.", 2222, 20, false);
-    pyro_member = new Member("Pyromancer", "A fire mage who promises they won't burn your guild down.", 45100, 72,true);
-    cloth_member = new Member("Clothier", "A clothes maker who'll make some sweet matching robes.", 100000, 150, false);
-    necro_member = new Member("Necromancer", "A mage of death. Spooky.", 333333, 333, true);
-    merchant_member = new Member("Merchant", "A salesman to generate more income for your guild.", 707070, 700, false);
-    geo_member = new Member("Geomancer", "A stoic mage of the earth, ready to shape the world to your will.", 2500000, 2500, true);
-    noble_member = new Member("Noble", "An generous noble who's interested in spending some of their wealth for you.", 5000000, 5000, false);
-    archmage_member = new Member("Archmage", "A master of all things magic. ", 12345678, 9876, true);
-    hero_member = new Member("Hero", "An adventurous hero to rightfully earn some treasure for you.", 30000000, 30000, false);
+    scholar_member = new Member("Scholar", "A more experienced mage, but still interesting in learning.", 500, 5, true);
+    builder_member = new Member("Builder", "A helpful construction worker to expand your guild.", 1234, 10, false);
+    pyro_member = new Member("Pyromancer", "A fire mage who promises they won't burn your guild down.", 19999, 72,true);
+    cloth_member = new Member("Clothier", "A clothes maker who'll make some sweet matching robes.", 45000, 100, false);
+    necro_member = new Member("Necromancer", "A mage of death. Spooky.", 444444, 333, true);
+    merchant_member = new Member("Merchant", "A salesman to generate more income for your guild.", 888888, 555, false);
+    geo_member = new Member("Geomancer", "A stoic mage of the earth, ready to shape the world to your will.", 7500000, 3500, true);
+    noble_member = new Member("Noble", "An generous noble who's interested in spending some of their wealth for you.", 17000000, 19999, false);
+    archmage_member = new Member("Archmage", "A master of all things magic. ", 123456789, 19999, true);
+    hero_member = new Member("Hero", "An adventurous hero to rightfully earn some treasure for you.", 300000000, 30000, false);
 
     members[0] = apprentice_member;
     members[1] = recruiter_member;
@@ -437,11 +456,14 @@ function Start(){
                                     calcGoalStudyWorld, onCastStudyWorld);
     reanimate_worker_spell = new Spell("Reanimate Worker", "Resurrects the cheapest worker, spending mana equal to 120% of its gold cost. Ressing: None",
                                     calcGoalReanimateWorker, onCastReanimateWorker);
+    invoke_divine_spell = new Spell("Invoke Divine Power", "Invoke the power of the gods, granting you bonuses once you prestige.", 
+                                    calcGoalInvokeDivine, onCastInvokeDivine)
     
     spells[0] = new Spell("None (Storing mana)");
     spells[1] = manifest_gold_spell;
     spells[2] = study_world_spell;
     spells[3] = reanimate_worker_spell;
+    spells[4] = invoke_divine_spell;
 
     //Adding spells to html
     for(var i = 1; i < spells.length; i++){
@@ -469,89 +491,117 @@ function Start(){
 
     /* Template for standard upgrades
     // upgrades
-    addStandardUpgrade("", "Multiplies ~ > production by 2. <br><q><i></i></q>", 001, 0, member, 1);
-    addStandardUpgrade("", "Multiplies ~ > production by 2. <br><q><i></i></q>", 002, 0, member, 10);
+    addStandardUpgrade("", "Multiplies ~ > production by 2. <br><q><i></i></q>", 001, member.base_cost * 10, member, 1);
+    addStandardUpgrade("", "Multiplies ~ > production by 2. <br><q><i></i></q>", 002, member.base_cost * 100, member, 25);
+    addStandardUpgrade("", "Multiplies ~ > production by 3. <br><q><i></i></q>", 003, member.base_cost * 10000, member, 50, 3);
+    addStandardUpgrade("", "Multiplies ~ > production by 3. <br><q><i></i></q>", 004, member.base_cost * 1000000, member, 100, 3);
     */
     
     //Apprentice upgrades
-    addStandardUpgrade("Magic Classes", "Multiplies Apprentice mana production by 2. <br><q><i>Maybe you should actually teach these kids something.</i></q>", 101, 100, apprentice_member, 1);
-    addStandardUpgrade("Spell Practice", "Multiplies Apprentice mana production by 2. <q><i>P-R-A-C-T-I-C-E</i></q>", 102, 1000, apprentice_member, 25);
+    addStandardUpgrade("Magic Classes", "Multiplies Apprentice mana production by 2. <br><q><i>Maybe you should actually teach these kids something.</i></q>", 101, apprentice_member.base_cost * 10, apprentice_member, 1);
+    addStandardUpgrade("Spell Practice", "Multiplies Apprentice mana production by 2. <q><i>P-R-A-C-T-I-C-E</i></q>", 102, apprentice_member.base_cost * 100, apprentice_member, 25);
+    addStandardUpgrade("Class pet", "Multiplies Apprentice mana production by 3. <br><q><i>Get a funky little animal thing for your apprentices.</i></q>", 103, apprentice_member.base_cost * 10000, apprentice_member, 50, 3);
+    addStandardUpgrade("Apprentice apprentices", "Multiplies Apprentice mana production by 3. <br><q><i>The best way to learn something is to teach it to someone else.</i></q>", 104, apprentice_member.base_cost * 1000000, apprentice_member, 100, 3);
 
     //Recruiter upgrades
-    addStandardUpgrade("Magic Signs", "Multiplies Recruiter gold production by 2. <q><i>Draws more attention.</i></q>", 201, 500, recruiter_member, 1);
-    addStandardUpgrade("Loudspeaker", "Multiplies Recruiter gold production by 2. <q><i>Draws more attention. But, like, even more.</i></q>", 202, 5000, recruiter_member, 25);
+    addStandardUpgrade("Magic Signs", "Multiplies Recruiter gold production by 2. <q><i>Draws more attention.</i></q>", 201, recruiter_member.base_cost * 10, recruiter_member, 1);
+    addStandardUpgrade("Loudspeaker", "Multiplies Recruiter gold production by 2. <q><i>Draws more attention. But, like, even more.</i></q>", 202, recruiter_member.base_cost * 100, recruiter_member, 25);
+    addStandardUpgrade("Motavational Speaking", "Multiplies Recruiter gold production by 3. <br><q><i>Believe yourself or something like that.</i></q>", 203, recruiter_member.base_cost * 10000, recruiter_member, 50, 3);
+    addStandardUpgrade("Free pizza", "Multiplies Recruiter gold production by 3. <br><q><i>Haven't found a better motivator than this</i></q>", 204, recruiter_member.base_cost * 1000000, recruiter_member, 100, 3);
 
     //Scholar upgrades
-    addStandardUpgrade("Magic Glasses", "Multiplies Scholar mana production by 2. <q><i>Oh..... THAT'S what those black smudges are supposed to be!</i></q>", 301, 5000, scholar_member, 1);
-    addStandardUpgrade("Library card", "Multiplies Scholar mana production by 2. <br><q><i>Gaining mana isn't hard when you've got a library card!</i></q>", 302, 50000, scholar_member, 25);
+    addStandardUpgrade("Magic Glasses", "Multiplies Scholar mana production by 2. <q><i>Oh..... THAT'S what those black smudges are supposed to be!</i></q>", 301, scholar_member.base_cost * 10, scholar_member, 1);
+    addStandardUpgrade("Library card", "Multiplies Scholar mana production by 2. <br><q><i>Gaining mana isn't hard when you've got a library card!</i></q>", 302, scholar_member.base_cost * 100, scholar_member, 25);
+    addStandardUpgrade("Quiet hours", "Multiplies Scholar mana production by 3. <br><q><i>...</i></q>", 303, scholar_member.base_cost * 10000, scholar_member, 50, 3);
+    addStandardUpgrade("Essay writings", "Multiplies Scholar mana production by 3. <br><q><i>At mininmum 5 paragraphs of dubiously researched topics. Perfect.</i></q>", 304, scholar_member.base_cost * 1000000, scholar_member, 100, 3);
 
     //Builder upgrades
     addStandardUpgrade("Magic Hammers", "Multiplies Builder gold production by 2. <br><q><i>These should help the building process.</i></q>", 401, builder_member.base_cost * 10, builder_member, 1);
     addStandardUpgrade("Hard Hats", "Multiplies Builder gold production by 2. <q><i>Especially neccessary now that builders keep hitting each other with hammers.</i></q>", 402, builder_member.base_cost * 100, builder_member, 25);
+    addStandardUpgrade("Break time", "Multiplies Builder gold production by 3. <br><q><i>No, you're not literally breaking time itself. Not yet, anyways.</i></q>", 403, builder_member.base_cost * 10000, builder_member, 50, 3);
+    addStandardUpgrade("Saw Convention", "Multiplies Builder production by 3. <br><q><i>Bro are you going to SawCon?</i></q>", 404, builder_member.base_cost * 1000000, builder_member, 100, 3);
 
     //Pyro upgrades
     addStandardUpgrade("Magic Book of Matches", "Multiplies Pyromancer mana production by 2. <br><q><i>You're pretty sure that matches are not magical, but your pyromancers want them anyway.</i></q>", 501, pyro_member.base_cost * 10, pyro_member, 1);
-    addStandardUpgrade("Campfire", "Multiplies Pyromancer mana production by 2. <br><q><i>Your pyromancers say they have a relaxing song to sing for the campfire.</i></q>", 502, pyro_member.base_cost * 100, pyro_member, 25);
+    addStandardUpgrade("Kindling", "Multiplies Pyromancer mana production by 2. <br><q><i>It's heating up in here.</i></q>", 502, pyro_member.base_cost * 100, pyro_member, 25);
+    addStandardUpgrade("Campfire", "Multiplies Pyromancer mana production by 3. <br><q><i>Your pyromancers say they have a relaxing song to sing for the campfire.</i></q>", 503, pyro_member.base_cost * 10000, pyro_member, 50, 3);
+    addStandardUpgrade("Bonfire", "Multiplies Pyromancer mana production by 3. <br><q><i>Feels like you can stare into these flames for hours.</i></q>", 504, pyro_member.base_cost * 1000000, pyro_member, 100, 3);
 
     //Cloth upgrades
     addStandardUpgrade("Magic Needles", "Multiplies Clothier gold production by 2. <br><q><i>Youch!</i></q>", 601, cloth_member.base_cost*10, cloth_member, 1);
     addStandardUpgrade("Haystack", "Multiplies Clothier gold production by 2. <br><q><i>To store the needles in, of course.</i></q>", 602, cloth_member.base_cost*100, cloth_member, 25);
+    addStandardUpgrade("Matching robes", "Multiplies Clothier gold production by 3. <br><q><i>Absolutely necessary from any self respecting guild.</i></q>", 603, cloth_member.base_cost * 10000, cloth_member, 50, 3);
+    addStandardUpgrade("Golden wool", "Multiplies Clothier gold production by 3. <br><q><i>It's actually iron pyrite wool, but you're keeping that one to yourself.</i></q>", 604, cloth_member.base_cost * 1000000, cloth_member, 100, 3);
 
     //Necro upgrades
     addStandardUpgrade("Magic skulls", "Multiplies Necromancer mana production by 2. <br><q><i>It's quite fun to dramatically hold one of these in your hand</i></q>", 701, necro_member.base_cost * 10, necro_member, 1);
     addStandardUpgrade("Mausoleum", "Multiplies Necromancer mana production by 2. <br><q><i>Like 90% of a necromancer's powers come from having a spooky environment.</i></q>", 702, necro_member.base_cost * 100, necro_member, 25);
+    addStandardUpgrade("Zombies", "Multiplies Necromancer mana production by 3. <br><q><i>Classic undead creatures.</i></q>", 703, necro_member.base_cost * 10000, necro_member, 50, 3);
+    addStandardUpgrade("Dark pact", "Multiplies Necromancer mana production by 3. <br><q><i>As long as it's not your soul they're selling, your necromancers are free to do as they wish</i></q>", 704, necro_member.base_cost * 1000000, necro_member, 100, 3);
     
     //Merchant upgrades
     addStandardUpgrade("Magic goods", "Multiplies Merchant gold production by 2. <br><q><i>Much better than those magic bads.</i></q>", 801, merchant_member.base_cost * 10, merchant_member, 1);
     addStandardUpgrade("Haggling", "Multiplies Merchant gold production by 2. <br><q><i>You sure wish you could haggle on these upgrade costs.</i></q>", 802, merchant_member.base_cost * 100, merchant_member, 25);
+    addStandardUpgrade("Advertising", "Multiplies Merchant gold production by 3. <br><q><i>Everyone across the kingdom shall know your wares.</i></q>", 803, merchant_member.base_cost * 10000, merchant_member, 50, 3);
+    addStandardUpgrade("Currency exchange", "Multiplies Merchant gold production by 3. <br><q><i>Allows your merchants to trade with anyone across the globe.</i></q>", 804, merchant_member.base_cost * 1000000, merchant_member, 100, 3);
 
     //Geomancer upgrades
     addStandardUpgrade("Magic shovels", "Multiplies Geomancer mana production by 2. <br><q><i>Yes, moving dirt with enchant tools definetely counts as geomancy.</i></q>", 901, geo_member.base_cost * 10, geo_member, 1);
     addStandardUpgrade("Geography", "Multiplies Geomancer mana production by 2. <br><q><i>To shape the earth, you must first understand it.</i></q>", 902, geo_member.base_cost * 100, geo_member, 25);
+    addStandardUpgrade("Earthquakes", "Multiplies Geomancer mana production by 3. <br><q><i>Listen, it was their fault for building their homes on that fault line.</i></q>", 903, geo_member.base_cost * 10000, geo_member, 50, 3);
+    addStandardUpgrade("Lava flows", "Multiplies Geomancer mana production by 3. <br><q><i>But solid rock doesn't.</i></q>", 904, geo_member.base_cost * 1000000, geo_member, 100, 3);
 
     //Noble upgrades
     addStandardUpgrade("Magic castles", "Multiplies Noble gold production by 2. <br><q><i>Objectively harder to live in a magically shifting castle, but also objectively cooler!</i></q>", 1001, noble_member.base_cost * 10, noble_member, 1);
     addStandardUpgrade("Nepotism", "Multiplies Noble gold production by 2. <br><q><i>A noble's kids want to become mages. Sure... as long as you get paid from this deal.</i></q>", 1002, noble_member.base_cost * 100, noble_member, 25);
+    addStandardUpgrade("New Taxes", "Multiplies Noble gold production by 3. <br><q><i>Makes you wish you could tax directly from the noble instead of from the common people.</i></q>", 1003, noble_member.base_cost * 10000, noble_member, 50, 3);
+    addStandardUpgrade("Steel throne", "Multiplies Noble gold production by 3. <br><q><i>Symbolizes their victory in battle over all their foes. (Note: most of your nobles have never been in a battle.)</i></q>", 1004, noble_member.base_cost * 1000000, noble_member, 100, 3);
 
     //Archmage upgrades
     addStandardUpgrade("Magic magic", "Multiplies Archmage mana production by 2. <br><q><i>Yeah, we enchanted magic itself. Don't think about it too hard.</i></q>", 1101, archmage_member.base_cost * 10, archmage_member, 1);
     addStandardUpgrade("Mighty staves", "Multiplies Archmage mana production by 2. <br><q><i>Wands are for dweebs, real archmages use a STAFF.</i></q>", 1102, archmage_member.base_cost * 100, archmage_member, 25);
+    addStandardUpgrade("Flowing robes", "Multiplies Archmage mana production by 3. <br><q><i>The most important spells in an archmage's arsenal are the ones that make them look the most dramatic.</i></q>", 1103, archmage_member.base_cost * 10000, archmage_member, 50, 3);
+    addStandardUpgrade("Multi-school Spells", "Multiplies Archmage mana production by 3. <br><q><i>A combination spell of all spell schools, controllable by only the strongest mahes.</i></q>", 1104, archmage_member.base_cost * 1000000, archmage_member, 100, 3);
 
     //Hero upgrades
     addStandardUpgrade("Magic gear", "Multiplies Hero gold production by 2. <br><q><i>Monster killing just got a whole lot easier!</i></q>", 1201, hero_member.base_cost * 10, hero_member, 1);
     addStandardUpgrade("Quest helper", "Multiplies Hero gold production by 2. <br><q><i>Your heroes are so good at completing quests, its like they're reading exactly what to do in a guide or something.</i></q>", 1202, hero_member.base_cost * 100, hero_member, 25);
+    addStandardUpgrade("Dungeon crawling", "Multiplies Hero gold production by 3. <br><q><i>Who are these people just leaving treasure chests of gold for anyone to grab?</i></q>", 1203, hero_member.base_cost * 10000, hero_member, 50, 3);
+    addStandardUpgrade("Raid teams", "Multiplies Hero gold production by 3. <br><q><i>Perfect way to destroy giant bosses, and also their friendship.</i></q>", 1204, hero_member.base_cost * 1000000, hero_member, 100, 3);
 
     //Manifest Goldupgrades
     addUpgradeTo(new Upgrade("More manifestation", "Multiplies the cost (and production) of Manifest Gold by 100.", 10001, 10000, function(){manifest_gold_limit *= 100; manifest_gold_spell.updates();}, function(){return mana_per >= 100;}))
     addUpgradeTo(new Upgrade("Even more manifestation", "Multiplies the cost (and production) of Manifest Gold by 100. <br><q><i>Again!</i></q>", 10002, 1000000, function(){manifest_gold_limit *= 100; manifest_gold_spell.updates();}, function(){return mana_per >= 10000;}))
     addUpgradeTo(new Upgrade("Manifestion escalation", "Multiplies the cost (and production) of Manifest Gold by 100. <br><q><i>Third time's the charm.</i></q>", 10003, 100000000, function(){manifest_gold_limit *= 100; manifest_gold_spell.updates();}, function(){return mana_per >= 1000000;}))
+    addUpgradeTo(new Upgrade("Too much manifestion", "Multiplies the cost (and production) of Manifest Gold by 1000. <br><q><i>Stop!</i></q>", 10004, 10000000000, function(){manifest_gold_limit *= 1000; manifest_gold_spell.updates();}, function(){return mana_per >= 100000000;}))
 
 
     //Study world Upgrades
-    addStudyWorldUpgrade("Leyline mapping", "Multiplies all mana production by 1.1", 1);
-    addStudyWorldUpgrade("Trade route mapping", "Multiplies all gold production by 1.1", 2, function(){increaseGoldMultBonus(1.1)});
-    addStudyWorldUpgrade("Leyline mapping 2", "Multiplies all mana production by 1.1", 3);
+    addStudyWorldUpgrade("Leyline mapping", "Multiplies all mana production by 1.2", 1);
+    addStudyWorldUpgrade("Trade route mapping", "Multiplies all gold production by 1.4", 2, function(){increaseGoldMultBonus(1.4)});
+    addStudyWorldUpgrade("Leyline mapping 2", "Multiplies all mana production by 1.2", 3);
     addStudyWorldUpgrade("Guild Highway", "Reduces cost of purchasing new members by 5%", 4, onPurchaseGuildHighway);
-    addStudyWorldUpgrade("Leyline mapping 3", "Multiplies all mana production by 1.1", 5);
+    addStudyWorldUpgrade("Leyline mapping 3", "Multiplies all mana production by 1.2", 5);
 
-    addStudyWorldUpgrade("Grand Library", "Multiplies Scholar production by 5", 6, function(){scholar_member.prod_mult_bonus *= 5});
-    addStudyWorldUpgrade("Leyline mapping 4", "Multiplies all mana production by 1.1", 7);
-    addStudyWorldUpgrade("Trade route mapping 2", "Multiplies all gold production by 1.1", 8, function(){increaseGoldMultBonus(1.1)});
-    addStudyWorldUpgrade("Leyline mapping 5", "Multiplies all mana production by 1.1", 9);
+    addStudyWorldUpgrade("Grand Academy", "Multiplies Apprentice, Recruiter, Scholar, Builder production by 10", 6, function(){apprentice_member.prod_mult_bonus *= 10; recruiter_member.prod_mult_bonus *= 10; scholar_member.prod_mult_bonus *= 10; builder_member.prod_mult_bonus *= 10;});
+    addStudyWorldUpgrade("Leyline mapping 4", "Multiplies all mana production by 1.2", 7);
+    addStudyWorldUpgrade("Trade route mapping 2", "Multiplies all gold production by 1.4", 8, function(){increaseGoldMultBonus(1.4)});
+    addStudyWorldUpgrade("Leyline mapping 5", "Multiplies all mana production by 1.2", 9);
     addStudyWorldUpgrade("Highest peak in the world", "Multiplies all mana production by 2.5 <br><q><i>The proximity of the stars makes mana flow even more.</i></q>", 10, function(){increaseManaMultBonus(2.5)});
 
-    addStudyWorldUpgrade("Leyline mapping 6", "Multiplies all mana production by 1.1", 11);
+    addStudyWorldUpgrade("Leyline mapping 6", "Multiplies all mana production by 1.2", 11);
     addStudyWorldUpgrade("Mass gravesite", "Multiplies Raise Worker spell cost by .95 <br><q><i>Probably the result of a plague or something..... On second thought maybe we shouldn't hang around here too long.</i></q>", 12, function(){reanimate_worker_cost_mult *= .95; reanimate_worker_spell.updates()});
-    addStudyWorldUpgrade("Leyline mapping 7", "Multiplies all mana production by 1.1", 13);
+    addStudyWorldUpgrade("Leyline mapping 7", "Multiplies all mana production by 1.2", 13);
     addStudyWorldUpgrade("Hills of gold", "Multiplies all gold production by 4", 14, function(){increaseGoldMultBonus(4)});
     addStudyWorldUpgrade("Rip in time", "Multiplies all production by 3 <br><q><i>Time flows differently here. Would make a neat tourist destination</i></q>", 15, function(){increaseBothMultBonus(3)});
 
-    // addStudyWorldUpgrade("Leyline mapping 8", "Multiplies all mana production by 1.1", 16);
-    // addStudyWorldUpgrade("Trade route mapping 3", "Multiplies all gold production by 1.1", 17, function(){increaseGoldMultBonus(1.1)});
-    // addStudyWorldUpgrade("Leyline mapping 9", "Multiplies all mana production by 1.1", 18);
-    // addStudyWorldUpgrade("Trade route mapping 4", "Multiplies all gold production by 1.1", 19, function(){increaseGoldMultBonus(1.1)});
-    // addStudyWorldUpgrade("Rip in time 2", "Multiplies all production by 5 <br><q><i>Your scholars tell you this is actually the same rip in time as the last one, merely existing in the same time, but different place. Neat.</i></q>", 20, function(){increaseBothMultBonus(5)});
-
+    addStudyWorldUpgrade("Leyline mapping 8", "Multiplies all mana production by 1.2", 16);
+    addStudyWorldUpgrade("Trade route mapping 3", "Multiplies all gold production by 1.4", 17, function(){increaseGoldMultBonus(1.4)});
+    addStudyWorldUpgrade("Leyline mapping 9", "Multiplies all mana production by 1.2", 18);
+    addStudyWorldUpgrade("Trade route mapping 4", "Multiplies all gold production by 1.4", 19, function(){increaseGoldMultBonus(1.4)});
+    addStudyWorldUpgrade("Rip in time 2", "Multiplies all production by 5 <br><q><i>Your scholars tell you this is actually the same rip in time as the last one, merely existing in the same time, but different place. Neat.</i></q>", 20, function(){increaseBothMultBonus(5)});
+    
+    checkUpgradesUnique();
 
     //fixing width of right menu buttons
     var menu_buttons = document.getElementsByClassName("menu_button");
@@ -615,10 +665,13 @@ function Reset(){
     }
 
     manifest_gold_limit = 10;
-    reanimate_worker_cost_mult = 1.1;
+    reanimate_worker_cost_mult = 1.05;
 
     for(let i = 1; i < spells.length; i++){
-        spells[i].cast_count = 0;
+        if(spells[i] != invoke_divine_spell){
+            spells[i].cast_count = 0;
+        }
+        
         spells[i].unlocked = false;
         spells[i].updates();
     }
@@ -656,6 +709,12 @@ function trueReset(){
 
     total_mana_count = 0;
     total_gold_count = 0;
+
+    invoke_divine_spell.cast_count = 0;
+
+    potential_prestige = 0;
+    prestige_points = 0;
+    ichor_count = 0;
 
     //reseting prestige button
     prestige_unlocked = false;
@@ -716,14 +775,19 @@ function checkUnlocks(){
     }
 
     //Unhides "Study world" spell
-    if(study_world_spell.element.hidden && scholar_member.count >= 5){
+    if(!study_world_spell.unlocked && scholar_member.count >= 5){
         study_world_spell.unlocked = true;
         study_world_spell.updates();
     }
 
-    if(reanimate_worker_spell.element.hidden && necro_member.count >= 5){
+    if(!reanimate_worker_spell.unlocked && necro_member.count >= 5){
         reanimate_worker_spell.unlocked = true;
         reanimate_worker_spell.updates();
+    }
+
+    if(!invoke_divine_spell.unlocked && archmage_member.count >= 5){
+        invoke_divine_spell.unlocked = true;
+        invoke_divine_spell.updates();
     }
 
     for(let i = 0; i < upgrades.length; i++){
@@ -745,8 +809,7 @@ function checkUnlocks(){
         upgrades_menu_button.style.color = "whitesmoke";
     }
 
-    //TODO: update to real condition
-    if(!prestige_unlocked && total_mana_count > 1000000000000){
+    if(!prestige_unlocked && invoke_divine_spell.cast_count >= 1){
         unlockPrestigeButton();
     }
 
@@ -762,9 +825,11 @@ function fixedNumberText(num, decimal = 0){
         num *= Math.pow(10, decimal);
         num = Math.floor(num);
         num /= Math.pow(10, decimal);
+    }else{
+        num = Math.round(num);
     }
 
-    num = Math.round(num);
+    
 
     let end_text = "";
 
@@ -883,9 +948,9 @@ function addStandardUpgrade(name, desc, id, cost, member, req, bonus = 2){
     return addUpgradeTo(new Upgrade(name, desc, id, cost, stand_purch, stand_unlock));
 }
 
-function addStudyWorldUpgrade(name, desc, num, on_purch = function(){increaseManaMultBonus(1.1)}){
+function addStudyWorldUpgrade(name, desc, num, on_purch = function(){increaseManaMultBonus(1.2)}){
 
-    return addUpgradeTo(new Upgrade(name, desc, 10100 + num, 2000 * Math.pow(5, num), on_purch, function(){return study_world_spell.cast_count >= num}));
+    return addUpgradeTo(new Upgrade(name, desc, 10100 + num, 2000 * Math.pow(4, num), on_purch, function(){return study_world_spell.cast_count >= num}));
 }
 
 function increaseMana(m){
@@ -928,7 +993,7 @@ function increaseBothMultBonus(b){
 
 function updateProdPer(){
     //Calculating mana production
-    temp_mana_per = 1.0 * mana_add_bonus * mana_mult_bonus;
+    temp_mana_per = 1.0 * mana_add_bonus * mana_mult_bonus * ((0.1 * prestige_points) + 1);
 
     for(var i = 0; i < members.length; i++){
         if(members[i].isMage){
@@ -984,6 +1049,32 @@ function unlockPrestigeButton(){
     prestige_menu_button.innerHTML = "Prestige";
 
     prestige_unlocked = true;
+}
+
+function onPrestige(){
+    prestige_points += potential_prestige;
+    ichor_count += potential_prestige;
+
+    prestige_counter.innerHTML = fixedNumberText(prestige_points) + " prestige points";
+
+    potential_prestige = 0;
+
+    Reset();
+}
+
+
+function checkUpgradesUnique(){
+    //Checks to make sure every upgrade id is unique
+    for(let i = 0; i < upgrades.length;i++){
+        for(let j = i+1; j< upgrades.length; j++){
+            if(upgrades[i].id == upgrades[j].id){
+                console.warn("Upgrades " + upgrades[i].name + " and " + upgrades[j].name + " have the same id (" + upgrades[i].id + ").");
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 //Debug Cheats
@@ -1112,6 +1203,21 @@ function importSave(){
 
     closeImportExportWindow();
 }
+
+function prestigeConfirmed(){
+    onPrestige();
+
+    closePrestigeConfirmWindow();
+}
+
+function showPrestigeConfirmWindow(){
+    prestige_confirm_window.hidden = false;
+}
+
+function closePrestigeConfirmWindow(){
+    prestige_confirm_window.hidden = true;
+}
+
 
 
 //Creating HTML elements
@@ -1412,10 +1518,19 @@ function writeSave(){
     save_data += "|";
     save_data += num_mode;
 
+    
+
     save_data += "~";
-    save_data += "PrestButton";
+    save_data += "Prestige";
     save_data += "|";
     save_data += prestige_unlocked;
+    save_data += "|";
+    save_data += potential_prestige;
+    save_data += "|";
+    save_data += prestige_points;
+    save_data += "|";
+    save_data += ichor_count;
+
 
     encoded_save_data = utf8_to_b64(save_data);
 
@@ -1503,10 +1618,17 @@ function loadSave(str = ""){
                     changeSpell(parseInt(sub_bits[1]))
                 }else if (prime_sub_bit == "Num Mode"){
                     changeNumDisplay(parseInt(sub_bits[1]))
-                }else if(prime_sub_bit == "PrestButton"){
+                }else if(prime_sub_bit == "Prestige"){
                     if(sub_bits[1] === "true"){
                         unlockPrestigeButton();
                     }
+                    potential_prestige = sub_bits[2];
+                    prestige_reset_button.innerHTML = "Click to prestige for <br>" + fixedNumberText(potential_prestige) + " prestige points.";
+
+                    prestige_points = sub_bits[3];
+                    prestige_counter.innerHTML = fixedNumberText(prestige_points) + " prestige points";
+
+                    ichor_count = sub_bits[4];
                 }
 
             }
@@ -1599,7 +1721,7 @@ function onCastManifestGold(){
 }
 
 function calcGoalStudyWorld(){
-    return 2000 * Math.pow(5, this.cast_count);
+    return 2000 * Math.pow(4, this.cast_count);
 }
 
 function onCastStudyWorld(){
@@ -1635,6 +1757,15 @@ function findReanimateTarget(){
     return target_member;
 }
 
+function calcGoalInvokeDivine(){
+    return 100000000 * Math.pow(this.cast_count + 1, 2);
+}
+
+function onCastInvokeDivine(){
+    potential_prestige++;
+    prestige_reset_button.innerHTML = "Click to prestige for <br>" + fixedNumberText(potential_prestige) + " prestige points.";
+}
+
 //Functions for upgrades
 
 function onPurchaseGuildHighway(){
@@ -1642,4 +1773,6 @@ function onPurchaseGuildHighway(){
         members[i].cost_factor *= .95;
         members[i].updates();
     }
+
+    reanimate_worker_spell.updates();
 }

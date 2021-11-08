@@ -185,7 +185,7 @@ body {
 .spell_name{
     position: absolute;
     height: 4vw;
-    width: 16vw;
+    width: 18vw;
     margin: .3vw;
 
     line-height: 3vw;
@@ -218,10 +218,10 @@ body {
     position: absolute;
 
     height: 4vw;
-    width: 28vw;
+    width: 27vw;
     margin: .3vw;    
 
-    left: 17vw;
+    left: 19vw;
 
     font-size: 1.2vw;
     color:whitesmoke;
@@ -639,12 +639,119 @@ body {
 
 #prestige{
     color:whitesmoke;
+    
     background-color: rgb(17, 0, 20);
 
     width:100%;
     height:100%;
 
     overflow-y: scroll;
+}
+
+#prestige_header{
+    position: absolute;
+    border: solid 3px rgb(30, 0, 36);
+    background-color: rgb(51, 0, 59);
+
+    top:.2vw;
+    left:  1.5vw;
+    right: 1.5vw;
+
+    text-align: center;
+    font-size: 1.8vw;
+}
+
+#prestige_info{
+    position: absolute;
+    
+
+    top: 3vw;
+    left:  1.5vw;
+    right: 1.5vw;
+
+    padding: .5vw;
+    font-size: 1vw;
+
+    border: solid 3px rgb(30, 0, 36);
+    background-color: rgb(51, 0, 59);
+}
+
+#prestige_reset_button{
+    position: absolute;
+
+    left: 18vw;
+    top: 8vw;
+
+    width:12vw;
+    height:3.5vw;
+
+    padding: .5vw;
+
+    cursor: pointer;
+
+    text-align: center;
+    font-size: 1.2vw;
+
+    border: solid 3px rgb(30, 0, 36);
+    background-color: rgb(51, 0, 59);    
+}
+
+#prestige_reset_button:hover{
+    background-color: rgb(63, 0, 73);  
+}
+
+#prestige_counter{
+    position: absolute;
+    text-align: center;
+    font-size: 2.3vw;
+
+    top: 13vw;
+
+    width: 100%;
+}
+
+#prestige_confirm_window{
+    position: absolute;
+
+    color:whitesmoke;
+    font-size: 25px;
+
+    padding: 10px;
+    text-align: center;
+
+    left:40vw;
+    top:20vh;
+
+    width:350px;
+    height:250px;
+
+    z-index: 2;
+
+    border: solid 3px rgb(30, 0, 36);
+    background-color: rgb(51, 0, 59);
+}
+
+.prestige_confirm_button{
+    position: absolute;
+
+    top: 200px;
+
+    float:right;
+
+    color:whitesmoke;
+    font-size: 25px;
+
+    cursor: pointer;
+
+    padding: 10px;
+    text-align: center;
+
+    border: solid 3px rgb(30, 0, 36);
+    background-color: rgb(51, 0, 59);
+}
+
+.prestige_confirm_button:hover{
+    background-color: rgb(63, 0, 73);  
 }
 
 #import_export_window{
@@ -687,6 +794,8 @@ body {
 
     color:whitesmoke;
     font-size: 25px;
+
+    cursor: pointer;
 
     padding: 10px;
     text-align: center;

@@ -105,7 +105,21 @@
             </div>
 
             <div id = "prestige">
-                prestige time buckaroos
+                <div id = "prestige_header">
+                    Prestige
+                </div>
+
+                <div id = "prestige_info">
+                    Reset almost all of your progress to gain prestige points. Your mana and gold production will be boosted by 10% for each prestige point you have earned.
+                </div>
+
+                <div id = "prestige_reset_button" onclick="showPrestigeConfirmWindow()">
+                    Click to prestige for <br> 0 prestige points.
+                </div>
+
+                <div id = "prestige_counter">
+                    0 prestige points
+                </div>
             </div>
 
         </div>
@@ -125,6 +139,18 @@
 
         <div class = "import_export_button" onclick="importSave()" style = "left:20px">
             Import Save
+        </div>
+    </div>
+
+    <div id = "prestige_confirm_window" hidden = true>
+        Are you sure you want to prestige and reset? You will lose all mana, gold, members, and upgrades.
+
+        <div class = "prestige_confirm_button" onclick="closePrestigeConfirmWindow()" style = "right:20px">
+            Close
+        </div>
+
+        <div class = "prestige_confirm_button" onclick="prestigeConfirmed()" style = "left:20px">
+            Prestige
         </div>
     </div>
     
