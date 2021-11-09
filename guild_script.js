@@ -427,7 +427,7 @@ function Start(){
     necro_member = new Member("Necromancer", "A mage of death. Spooky.", 444444, 333, true);
     merchant_member = new Member("Merchant", "A salesman to generate more income for your guild.", 888888, 555, false);
     geo_member = new Member("Geomancer", "A stoic mage of the earth, ready to shape the world to your will.", 7500000, 3500, true);
-    noble_member = new Member("Noble", "An generous noble who's interested in spending some of their wealth for you.", 17000000, 19999, false);
+    noble_member = new Member("Noble", "An generous noble who's interested in spending some of their wealth for you.", 17000000, 4500, false);
     archmage_member = new Member("Archmage", "A master of all things magic. ", 123456789, 19999, true);
     hero_member = new Member("Hero", "An adventurous hero to rightfully earn some treasure for you.", 300000000, 30000, false);
 
