@@ -1,7 +1,7 @@
 /*
  * Mage's Guild (v1) by Sirunknown (/u/sirunknown91 on Reddit)
  * Thanks for looking at my code! Please keep in mind that I only took like, a single "Web and internet programming" course that mostly focus on html, css, and PHP and stuff so 
- * javscript is not exactly my strongest language.
+ * javascript is not exactly my strongest language.
  *
 */
 //Frames per second
@@ -668,9 +668,7 @@ function Reset(){
     reanimate_worker_cost_mult = 1.05;
 
     for(let i = 1; i < spells.length; i++){
-        if(spells[i] != invoke_divine_spell){
-            spells[i].cast_count = 0;
-        }
+        spells[i].cast_count = 0;
         
         spells[i].unlocked = false;
         spells[i].updates();
@@ -688,6 +686,8 @@ function Reset(){
     purchased_upgrades = [];
 
     new_upgrade = false;
+
+    potential_prestige = 0;
 
     changeSpell(0);
 
@@ -710,11 +710,8 @@ function trueReset(){
     total_mana_count = 0;
     total_gold_count = 0;
 
-    invoke_divine_spell.cast_count = 0;
-
-    potential_prestige = 0;
-    prestige_points = 0;
-    ichor_count = 0;
+    prestige_points = 0.0;
+    ichor_count = 0.0;
 
     //reseting prestige button
     prestige_unlocked = false;
@@ -1622,13 +1619,13 @@ function loadSave(str = ""){
                     if(sub_bits[1] === "true"){
                         unlockPrestigeButton();
                     }
-                    potential_prestige = sub_bits[2];
+                    potential_prestige = parseInt(sub_bits[2]);
                     prestige_reset_button.innerHTML = "Click to prestige for <br>" + fixedNumberText(potential_prestige) + " prestige points.";
 
-                    prestige_points = sub_bits[3];
+                    prestige_points = parseInt(sub_bits[3]);
                     prestige_counter.innerHTML = fixedNumberText(prestige_points) + " prestige points";
 
-                    ichor_count = sub_bits[4];
+                    ichor_count = parseInt(sub_bits[4]);
                 }
 
             }
