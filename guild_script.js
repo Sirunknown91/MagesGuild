@@ -574,6 +574,7 @@ function Start(){
     addUpgradeTo(new Upgrade("Even more manifestation", "Multiplies the cost (and production) of Manifest Gold by 100. <br><q><i>Again!</i></q>", 10002, 1000000, function(){manifest_gold_limit *= 100; manifest_gold_spell.updates();}, function(){return mana_per >= 10000;}))
     addUpgradeTo(new Upgrade("Manifestion escalation", "Multiplies the cost (and production) of Manifest Gold by 100. <br><q><i>Third time's the charm.</i></q>", 10003, 100000000, function(){manifest_gold_limit *= 100; manifest_gold_spell.updates();}, function(){return mana_per >= 1000000;}))
     addUpgradeTo(new Upgrade("Too much manifestion", "Multiplies the cost (and production) of Manifest Gold by 1000. <br><q><i>Stop!</i></q>", 10004, 10000000000, function(){manifest_gold_limit *= 1000; manifest_gold_spell.updates();}, function(){return mana_per >= 100000000;}))
+    addUpgradeTo(new Upgrade("Not enough manifestion", "Multiplies the cost (and production) of Manifest Gold by 1000. <br><q><i>Keep going.</i></q>", 10005, 10000000000000, function(){manifest_gold_limit *= 1000; manifest_gold_spell.updates();}, function(){return mana_per >= 100000000000;}))
 
 
     //Study world Upgrades
@@ -599,7 +600,7 @@ function Start(){
     addStudyWorldUpgrade("Hills of gold 4", "Multiplies all gold production by 4", 17, function(){increaseGoldMultBonus(4)});
     addStudyWorldUpgrade("Leyline mapping 8", "Multiplies all mana production by 2", 18);
     addStudyWorldUpgrade("Hills of gold 5", "Multiplies all gold production by 4", 19, function(){increaseGoldMultBonus(4)});
-    addStudyWorldUpgrade("Rip in time 2", "Multiplies all production by 15 <br><q><i>Your scholars tell you this is actually the same rip in time as the last one, merely existing in the same time, but different place. Neat.</i></q>", 20, function(){increaseBothMultBonus(15)});
+    addStudyWorldUpgrade("Rip in time 2", "Multiplies all production by 15 <br><q><i>Your scholars tell you this is actually the same rip in time as the last one, merely existing in the same time, but different place. Neat. (This is the last thing you can get by studying the world, by the way.</i></q>", 20, function(){increaseBothMultBonus(15)});
     
     checkUpgradesUnique();
 
@@ -740,11 +741,21 @@ function Update(){
         //check spell related stuff
         curr_spell.goal = curr_spell.calcGoal();
 
-        if(mana_count >= curr_spell.goal){
-            mana_count -= curr_spell.goal;
-            curr_spell.onCast();
-            curr_spell.goal = curr_spell.calcGoal();
+        if(curr_spell == invoke_divine_spell){
+            while(mana_count >= curr_spell.goal){
+                mana_count -= curr_spell.goal;
+                curr_spell.onCast();
+                curr_spell.goal = curr_spell.calcGoal();
+            }
+        }else{
+            if(mana_count >= curr_spell.goal){
+                mana_count -= curr_spell.goal;
+                curr_spell.onCast();
+                curr_spell.goal = curr_spell.calcGoal();
+            }
         }
+
+        
     }
     
     //Update text of visible counters
@@ -1055,6 +1066,7 @@ function onPrestige(){
     potential_prestige = 0;
 
     prestige_counter.innerHTML = fixedNumberText(prestige_points) + " prestige points";
+    prestige_reset_button.innerHTML = "Click to prestige for <br>" + fixedNumberText(potential_prestige) + " prestige points.";
 
 
     Reset();
