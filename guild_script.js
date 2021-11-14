@@ -577,29 +577,29 @@ function Start(){
 
 
     //Study world Upgrades
-    addStudyWorldUpgrade("Leyline mapping", "Multiplies all mana production by 1.2", 1);
-    addStudyWorldUpgrade("Trade route mapping", "Multiplies all gold production by 1.4", 2, function(){increaseGoldMultBonus(1.4)});
-    addStudyWorldUpgrade("Leyline mapping 2", "Multiplies all mana production by 1.2", 3);
+    addStudyWorldUpgrade("Leyline mapping", "Multiplies all mana production by 2", 1);
+    addStudyWorldUpgrade("Hills of gold", "Multiplies all gold production by 4", 2, function(){increaseGoldMultBonus(4)});
+    addStudyWorldUpgrade("Leyline mapping 2", "Multiplies all mana production by 2", 3);
     addStudyWorldUpgrade("Guild Highway", "Reduces cost of purchasing new members by 5%", 4, onPurchaseGuildHighway);
-    addStudyWorldUpgrade("Leyline mapping 3", "Multiplies all mana production by 1.2", 5);
+    addStudyWorldUpgrade("Leyline mapping 3", "Multiplies all mana production by 2", 5);
 
     addStudyWorldUpgrade("Grand Academy", "Multiplies Apprentice, Recruiter, Scholar, Builder production by 10", 6, function(){apprentice_member.prod_mult_bonus *= 10; recruiter_member.prod_mult_bonus *= 10; scholar_member.prod_mult_bonus *= 10; builder_member.prod_mult_bonus *= 10;});
-    addStudyWorldUpgrade("Leyline mapping 4", "Multiplies all mana production by 1.2", 7);
-    addStudyWorldUpgrade("Trade route mapping 2", "Multiplies all gold production by 1.4", 8, function(){increaseGoldMultBonus(1.4)});
-    addStudyWorldUpgrade("Leyline mapping 5", "Multiplies all mana production by 1.2", 9);
-    addStudyWorldUpgrade("Highest peak in the world", "Multiplies all mana production by 2.5 <br><q><i>The proximity of the stars makes mana flow even more.</i></q>", 10, function(){increaseManaMultBonus(2.5)});
+    addStudyWorldUpgrade("Leyline mapping 4", "Multiplies all mana production by 2", 7);
+    addStudyWorldUpgrade("Hills of gold 2", "Multiplies all gold production by 4", 8, function(){increaseGoldMultBonus(4)});
+    addStudyWorldUpgrade("Leyline mapping 5", "Multiplies all mana production by 2", 9);
+    addStudyWorldUpgrade("Highest peak in the world", "Multiplies all mana production by 10 <br><q><i>The proximity of the stars makes mana flow even more.</i></q>", 10, function(){increaseManaMultBonus(10)});
 
-    addStudyWorldUpgrade("Leyline mapping 6", "Multiplies all mana production by 1.2", 11);
+    addStudyWorldUpgrade("Deepest cave in the world", "Multiplies all gold production by 12 <br><q><i>Filled with treasure untouched by anyone.</i></q>", 11, function(){increaseGoldMultBonus(12)});
     addStudyWorldUpgrade("Mass gravesite", "Multiplies Raise Worker spell cost by .95 <br><q><i>Probably the result of a plague or something..... On second thought maybe we shouldn't hang around here too long.</i></q>", 12, function(){reanimate_worker_cost_mult *= .95; reanimate_worker_spell.updates()});
-    addStudyWorldUpgrade("Leyline mapping 7", "Multiplies all mana production by 1.2", 13);
-    addStudyWorldUpgrade("Hills of gold", "Multiplies all gold production by 4", 14, function(){increaseGoldMultBonus(4)});
-    addStudyWorldUpgrade("Rip in time", "Multiplies all production by 3 <br><q><i>Time flows differently here. Would make a neat tourist destination</i></q>", 15, function(){increaseBothMultBonus(3)});
+    addStudyWorldUpgrade("Leyline mapping 6", "Multiplies all mana production by 2", 13);
+    addStudyWorldUpgrade("Hills of gold 3", "Multiplies all gold production by 4", 14, function(){increaseGoldMultBonus(4)});
+    addStudyWorldUpgrade("Rip in time", "Multiplies all production by 10 <br><q><i>Time flows differently here. Would make a neat tourist destination</i></q>", 15, function(){increaseBothMultBonus(10)});
 
-    addStudyWorldUpgrade("Leyline mapping 8", "Multiplies all mana production by 1.2", 16);
-    addStudyWorldUpgrade("Trade route mapping 3", "Multiplies all gold production by 1.4", 17, function(){increaseGoldMultBonus(1.4)});
-    addStudyWorldUpgrade("Leyline mapping 9", "Multiplies all mana production by 1.2", 18);
-    addStudyWorldUpgrade("Trade route mapping 4", "Multiplies all gold production by 1.4", 19, function(){increaseGoldMultBonus(1.4)});
-    addStudyWorldUpgrade("Rip in time 2", "Multiplies all production by 5 <br><q><i>Your scholars tell you this is actually the same rip in time as the last one, merely existing in the same time, but different place. Neat.</i></q>", 20, function(){increaseBothMultBonus(5)});
+    addStudyWorldUpgrade("Leyline mapping 7", "Multiplies all mana production by 2", 16);
+    addStudyWorldUpgrade("Hills of gold 4", "Multiplies all gold production by 4", 17, function(){increaseGoldMultBonus(4)});
+    addStudyWorldUpgrade("Leyline mapping 8", "Multiplies all mana production by 2", 18);
+    addStudyWorldUpgrade("Hills of gold 5", "Multiplies all gold production by 4", 19, function(){increaseGoldMultBonus(4)});
+    addStudyWorldUpgrade("Rip in time 2", "Multiplies all production by 15 <br><q><i>Your scholars tell you this is actually the same rip in time as the last one, merely existing in the same time, but different place. Neat.</i></q>", 20, function(){increaseBothMultBonus(15)});
     
     checkUpgradesUnique();
 
@@ -945,9 +945,9 @@ function addStandardUpgrade(name, desc, id, cost, member, req, bonus = 2){
     return addUpgradeTo(new Upgrade(name, desc, id, cost, stand_purch, stand_unlock));
 }
 
-function addStudyWorldUpgrade(name, desc, num, on_purch = function(){increaseManaMultBonus(1.2)}){
+function addStudyWorldUpgrade(name, desc, num, on_purch = function(){increaseManaMultBonus(2)}){
 
-    return addUpgradeTo(new Upgrade(name, desc, 10100 + num, 2000 * Math.pow(4, num), on_purch, function(){return study_world_spell.cast_count >= num}));
+    return addUpgradeTo(new Upgrade(name, desc, 10100 + num, 2000 * Math.pow(5, num), on_purch, function(){return study_world_spell.cast_count >= num}));
 }
 
 function increaseMana(m){
@@ -1052,9 +1052,10 @@ function onPrestige(){
     prestige_points += potential_prestige;
     ichor_count += potential_prestige;
 
+    potential_prestige = 0;
+
     prestige_counter.innerHTML = fixedNumberText(prestige_points) + " prestige points";
 
-    potential_prestige = 0;
 
     Reset();
 }
@@ -1718,7 +1719,7 @@ function onCastManifestGold(){
 }
 
 function calcGoalStudyWorld(){
-    return 2000 * Math.pow(4, this.cast_count);
+    return 2000 * Math.pow(5, this.cast_count);
 }
 
 function onCastStudyWorld(){
@@ -1755,7 +1756,7 @@ function findReanimateTarget(){
 }
 
 function calcGoalInvokeDivine(){
-    return 100000000 * Math.pow(this.cast_count + 1, 2);
+    return 100000000 * Math.pow(this.cast_count + 1, 1.5);
 }
 
 function onCastInvokeDivine(){
