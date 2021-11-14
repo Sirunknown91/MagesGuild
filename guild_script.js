@@ -600,7 +600,7 @@ function Start(){
     addStudyWorldUpgrade("Hills of gold 4", "Multiplies all gold production by 4", 17, function(){increaseGoldMultBonus(4)});
     addStudyWorldUpgrade("Leyline mapping 8", "Multiplies all mana production by 2", 18);
     addStudyWorldUpgrade("Hills of gold 5", "Multiplies all gold production by 4", 19, function(){increaseGoldMultBonus(4)});
-    addStudyWorldUpgrade("Rip in time 2", "Multiplies all production by 15 <br><q><i>Your scholars tell you this is actually the same rip in time as the last one, merely existing in the same time, but different place. Neat. (This is the last thing you can get by studying the world, by the way.)</i></q>", 20, function(){increaseBothMultBonus(15)});
+    addStudyWorldUpgrade("Rip in time 2", "Multiplies all production by 15 (This is the last thing you can get by studying the world, by the way. I guess you win.)<br><q><i>Your scholars tell you this is actually the same rip in time as the last one, merely existing in the same time, but different place. Neat.</i></q>", 20, function(){increaseBothMultBonus(15)});
     
     checkUpgradesUnique();
 
